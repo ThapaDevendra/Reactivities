@@ -9,7 +9,7 @@ namespace Application.Activities
 {
     public class Edit
     {
-        public class Command : IRequest
+        public class Command : IRequest //sending object of Activity type as a parameter from our client side
         {
             public Activity Activity { get; set; }
         }
@@ -25,7 +25,7 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = await _context.Activities.FindAsync(request.Activity.Id);
+                var activity = await _context.Activities.FindAsync(request.Activity.Id); //returning data from the database
 
                 //will map from the Activity coming as a request which is the first parameter,
                 //will map to the database Activity which is the second parameter  

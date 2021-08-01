@@ -11,10 +11,12 @@ namespace Application.Activities
     public class List
     {
         //IRequest is the MediatR Interface that helps to fetch list of data of type Activity
-        public class Query : IRequest<List<Activity>> {}
+        //from our API
+        public class Query : IRequest<List<Activity>> {} //we not passing anything in parameter, it is returning List of Activity
 
 
-        //we will pass in first as Query and return list of Activity
+        //then we will pass in first as Query that is the list and return list of Activity
+        //back to our client side through the handler
         public class Handler : IRequestHandler<Query, List<Activity>>
         {
             private readonly DataContext _context;

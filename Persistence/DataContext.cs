@@ -11,7 +11,8 @@ namespace Persistence
         }
 
         //this property is the type "DbSet" and takes "Activity" type parameter. It's property name is "Activities"
-        //which is the database table name.
+        //which is the database table name. Property inside the Activity class will be the table column name in the 
+        //database table(Activities).
         public DbSet<Activity> Activities { get; set; }
     }
 }

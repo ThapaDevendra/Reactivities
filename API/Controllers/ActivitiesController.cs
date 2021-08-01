@@ -16,7 +16,7 @@ namespace API.Controllers
             return await Mediator.Send(new List.Query());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")]//passing id of the object
         public async Task<ActionResult<Activity>> GetActivity(Guid id)
         {
             return await Mediator.Send(new Details.Query{Id = id});
@@ -28,8 +28,9 @@ namespace API.Controllers
             return Ok(await Mediator.Send(new Create.Command {Activity = activity}));
         }
 
+        //we will update the object of the id passed
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditActivity(Guid id, Activity activity)
+        public async Task<IActionResult> EditActivity(Guid id, Activity activity) //we are adding id to the object before passing to our handler
         {
             activity.Id = id;
             return Ok(await Mediator.Send(new Edit.Command{Activity = activity}));

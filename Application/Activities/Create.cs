@@ -8,12 +8,14 @@ namespace Application.Activities
 {
     public class Create
     {
-        public class Command: IRequest
+        //this is command type that do not return any thing so we do 
+        //not have type parameter of IRequest
+        public class Command: IRequest //here we are passing object that we create
         {
-            public Activity Activity { get; set; }
+            public Activity Activity { get; set; }  
             
         }
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command> // it is not creating anything but only initializing
         {
             private readonly DataContext _context;
             public Handler(DataContext context)
@@ -27,7 +29,7 @@ namespace Application.Activities
 
                 await _context.SaveChangesAsync(); 
                 
-                return Unit.Value; 
+                return Unit.Value; //this is to let API controller the action has comopleted
             }
         }
     }

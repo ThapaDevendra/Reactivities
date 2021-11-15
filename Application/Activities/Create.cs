@@ -10,12 +10,12 @@ namespace Application.Activities
     {
         //this is command type that do not return any thing so we do 
         //not have type parameter of IRequest
-        public class Command: IRequest //here we are passing object that we create
+        public class Command: IRequest //here we are passing object that we create but not returning
         {
             public Activity Activity { get; set; }  
             
         }
-        public class Handler : IRequestHandler<Command> // it is not creating anything but only initializing
+        public class Handler : IRequestHandler<Command> // only one parameter as Command since it is creating and initializing
         {
             private readonly DataContext _context;
             public Handler(DataContext context)

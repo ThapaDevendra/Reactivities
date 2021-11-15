@@ -13,7 +13,7 @@ namespace Application.Activities
         {
             public Activity Activity { get; set; }
         }
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command> //only Command since it do not return any thing
         {
             private readonly DataContext _context;
             public readonly IMapper _mapper;
@@ -25,7 +25,7 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = await _context.Activities.FindAsync(request.Activity.Id); //returning data from the database
+                var activity = await _context.Activities.FindAsync(request.Activity.Id); //getting activity from the database
 
                 //will map from the Activity coming as a request which is the first parameter,
                 //will map to the database Activity which is the second parameter  

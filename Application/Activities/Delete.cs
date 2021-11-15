@@ -13,7 +13,7 @@ namespace Application.Activities
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command> //only Command since it do not return any thing
         {
             private readonly DataContext _context;
             public Handler(DataContext context)

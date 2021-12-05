@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction} from "mobx";
 import agent from "../api/agent";
 import { Activity } from "../models/activity";
-import {v4 as uuid} from "uuid";
+
 
 export default class ActivityStore{
 
@@ -28,17 +28,17 @@ export default class ActivityStore{
     get activitiesByDate(){
         return Array.from(this.activityRegistry.values()).sort((a,b) => Date.parse(a.date) - Date.parse(b.date));
     }
+
     loadActivities = async() =>{
-        try{
-            const activities = await agent.Activities.list();
-            runInAction(() =>{
-                activities.forEach(activity =>{
-                    activity.date = activity.date.split('T')[0]; //will split on the text, T char and take the first part
-                    //this.activities.push(activity);
-                    this.activityRegistry.set(activity.id, activity);   //inserting activity id and object itself in activityRegistry array
-                })
-                this.setLoadingInitital(false);
+    this.loadingInitial = true;
+    try{
+        const activities = await agent.Activities.list();
+        runInAction(() =>{
+            activities.forEach(activity =>{
+               this.setActivity(activity);
             })
+            this.setLoadingInitital(false);
+        })
         }catch(error){
             console.log(error);
             runInAction(()=>{
@@ -47,45 +47,73 @@ export default class ActivityStore{
         }
     }
 
+    loadActivity = async (id: string) => {
+        let activity = this.getActivity(id);
+        if(activity){
+            this.selectedActivity = activity; //if we have this object in the memory then we select from memory else we get it from our API
+            return activity;
+        }else{
+            this.loadingInitial=true;
+            try{
+                activity = await agent.Activities.details(id);  //if we do not have this object in memory we get it from API here
+                this.setActivity(activity);
+                this.selectedActivity = activity;
+                this.setLoadingInitital(false);
+                return activity;
+            }catch(error){
+                console.log('error');
+                this.setLoadingInitital(false);
+            }
+        }
+    }
+
+    private getActivity =(id: string) =>{
+        return this.activityRegistry.get(id);
+    }
+
+    private setActivity = (activity: Activity) =>{
+        activity.date = activity.date.split('T')[0]; //will split on the text, T char and take the first part
+        //this.activities.push(activity);
+        this.activityRegistry.set(activity.id, activity);   //inserting activity id and object itself in activityRegistry array
+    }
     //MobX Action
     setLoadingInitital = (state: boolean) =>{
         this.loadingInitial = state;
     }
 
     //MobX Action
-    selectActivity = (id: string) =>{
-        //this.selectedActivity = this.activities.find(x => x.id === id); //this will return the activity that matches that activity.id
-        this.selectedActivity = this.activityRegistry.get(id)           //this will return the activity that matches that activity.id
-    }
+    // selectActivity = (id: string) =>{
+    //     //this.selectedActivity = this.activities.find(x => x.id === id); //this will return the activity that matches that activity.id
+    //     this.selectedActivity = this.activityRegistry.get(id)           //this will return the activity that matches that activity.id
+    // }
 
     //Mobx Action
-    cancelSelectedActivity = () =>{
-        this.selectedActivity = undefined;
-    }
+    // cancelSelectedActivity = () =>{
+    //     this.selectedActivity = undefined;
+    // }
 
     //MobX Action in the parameter id? question marks represents the optional
     //so this function  takes parameter of id or with no parameter which is optional
     //in line 70 if the id exist then we pass to selectActivity and if not we gonna call cancelSelectedActivity if the detail form was open 
-    openForm = (id?: string) =>{
-        id ? this.selectActivity(id) : this.cancelSelectedActivity();
-        this.editMode = true;
-    }
+    // openForm = (id?: string) =>{
+    //     id ? this.selectActivity(id) : this.cancelSelectedActivity();
+    //     this.editMode = true;
+    // }
 
     //MobX Action
-    closeForm = () =>{
-        this.editMode = false;
-    }
+    // closeForm = () =>{
+    //     this.editMode = false;
+    // }
 
     //MobX Action
     createActivity = async (activity: Activity)=>{
         this.loading = true;
-        activity.id = uuid();
         try{
             await agent.Activities.create(activity);
             runInAction(() => {
                 //this.activities.push(activity);
                 this.activityRegistry.set(activity.id, activity);  /*activity.id is the Key and activity is the value for Map<key, value>*/
-                this.selectedActivity = activity;
+                runInAction(()=>{this.selectedActivity = activity})
                 this.editMode = false;
                 this.loading = false;
             })
@@ -124,7 +152,7 @@ export default class ActivityStore{
             runInAction(()=>{
                 //this.activities = [...this.activities.filter(x => x.id !== id)];
                 this.activityRegistry.delete(id);
-                if(this.selectedActivity?.id === id) this.cancelSelectedActivity(); //we use "?" if in case selectedActivity is undefined
+               //if(this.selectedActivity?.id === id) this.cancelSelectedActivity(); //we use "?" if in case selectedActivity is undefined
                 this.loading = false
             })
          }catch(error){

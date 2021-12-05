@@ -1,21 +1,15 @@
-import { useEffect } from 'react';
 import {  Container} from 'semantic-ui-react';
 import NavBar from './NavBar';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
-import LoadingComponent from './LoadingComponent';
-import { useStore } from '../stores/store'; 
 import { observer } from 'mobx-react-lite';
+import HomePage from '../../features/home/HomePage';
+import ActivityForm from '../../features/activities/form/ActivityForm';
+import { Route, Routes, useLocation} from 'react-router-dom';
+import ActivityDetails from '../../features/activities/details/ActivityDetails';
 
 function App() {
-
-  const {activityStore} = useStore();
-
  
   //const[submitting, setSubmitting] = useState(false);
-
-  useEffect(()=>{
-    activityStore.loadActivities();
-   }, [activityStore])
 
   //used to display the list after loading the page in default
   //in square bracket, first variable will store our state, second variable
@@ -83,17 +77,30 @@ function App() {
 //   })
 // }
 
- if(activityStore.loadingInitial) return <LoadingComponent content='Loading app '/>
-
+  const location = useLocation();
+  //console.log(location.key)
   return (
     //using this instead of div, helps prevent unnecessry div ta
+    //path={/(.+)} will match that has path with forward slash and anything after that
     <>
-      <NavBar />
-      <Container style={{marginTop: '7em' }}>
-        <ActivityDashboard />
+    <Routes>
+      <Route key ={location.key} path='/' element={<HomePage/>}/>
+      <Route key ={location.key} path='/*' element={
+      <>
+        <NavBar />
+          <Container style={{marginTop: '7em' }}>
+            <Routes key={location.key}>
+              <Route  key={location.key} path='activities' element={<ActivityDashboard/>}/>
+              <Route  key={location.key} path='activities/:id' element={<ActivityDetails/>}/>
+              {['/createActivity','/manage/:id'].map((path) =>
+                <Route key={location.key} path={path} element={<ActivityForm/>} /> ) } 
+                </Routes>
       </Container>
+      </>}/>
+      </Routes>
       </>
   );
 }
 
 export default observer(App);
+ 

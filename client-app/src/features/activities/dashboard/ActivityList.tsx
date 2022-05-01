@@ -1,9 +1,8 @@
 import { observer } from "mobx-react-lite";
-import { SyntheticEvent } from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Item, Segment } from "semantic-ui-react";
+import { Fragment } from "react";
+import { Header } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
+import ActivityListitem from "./ActivityListItem";
 
 // interface Props{
 //     activities: Activity[];
@@ -13,49 +12,31 @@ import { useStore } from "../../../app/stores/store";
 // }
 
 // export default function ActivityList({activities, deleteActivity, submitting}: Props){
-export default observer(function ActivityList(){
-    const{activityStore} = useStore();
-    const{activitiesByDate, deleteActivity,  loading} = activityStore;
+export default observer(function ActivityList() {
+    const { activityStore } = useStore();
+    const { groupedActivities, activitiesByDate } = activityStore;
 
-    const[target, setTarget] = useState('');  //set the local state
-    
-    function handleActivityDelete(event: SyntheticEvent<HTMLButtonElement>, id: string){
-        setTarget(event.currentTarget.name);
-        deleteActivity(id);
-    }
-    return(
+    console.log(activitiesByDate);
+    console.log(groupedActivities);
+    return (
+        <>
+            {groupedActivities.map(([group, activities]) => (
+                <Fragment key={group}>
+                    <Header sub color='teal'>
+                        {group}
+                    </Header>
+                    {activities.map(activity => (
+                        <ActivityListitem key={activity.id} activity={activity} />
+                    ))}
+                </Fragment>
+            ))}
+        </>
         //this tag will give us some padding and background color
         //divided helps to put horizontal line after each activity
         //whenever looping through each item in react its gonna duplicated therefore we need to assign a key to prevent that
         //as='a' forms a link, onClick={()=>selectActivity(activity.id)} this will prevent from execution of function when components render
         //but will only executes when button is click
         // In the angle bracket 'divided': creates horizontal line after each activity
-        <Segment> 
-            <Item.Group divided> 
-                {activitiesByDate.map(activity =>(
-                    <Item key={activity.id}>  
-                        <Item.Content>
-                            <Item.Header as='a'>{activity.title}</Item.Header>
-                            <Item.Meta>{activity.date}</Item.Meta>
-                            <Item.Description>
-                                <div>{activity.description}</div>
-                                <div>{activity.city}, {activity.venue}</div>
-                            </Item.Description>
-                            <Item.Extra>
-                                <Button as={Link} to={`/activities/${activity.id}`} floated='right' content='View' color='blue'/> 
-                                <Button 
-                                    name={activity.id}
-                                    loading={loading && target === activity.id} 
-                                    onClick={(event)=>handleActivityDelete(event, activity.id)}
-                                    floated='right' 
-                                    content='Delete' 
-                                    color='red'/> 
-                                <Button basic content={activity.category} />
-                            </Item.Extra>
-                        </Item.Content>
-                    </Item>
-                ))}
-            </Item.Group>
-        </Segment>
+
     )
 })

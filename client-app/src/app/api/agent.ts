@@ -42,7 +42,7 @@ const Activities ={
     list: () => requests.get<Activity[]>('/activities'),
     details: (id: string) => requests.get<Activity>(`/activities/${id}`), //passing id and return type is the Activity
     create: (activity: Activity) => requests.post<void>(`/activities`, activity),  //passing activity as the body, and void is the return type
-    update: (activity: Activity) => requests.put<void>(`/activites/${activity.id}`, activity), //passing id along with the body of activity, and void is the return type
+    update: (activity: Activity) => requests.put<void>(`/activities/${activity.id}`, activity), //passing id along with the body of activity, and void is the return type
     delete: (id: string) => requests.del<void>(`/activities/${id}`) //passing id along with the body of activity, and void is the return type
 
 

@@ -29,6 +29,25 @@ export default class ActivityStore{
         return Array.from(this.activityRegistry.values()).sort((a,b) => Date.parse(a.date) - Date.parse(b.date));
     }
 
+    get groupedActivities(){
+        return Object.entries(
+            this.activitiesByDate.reduce((activities, activity) =>{
+                const date = activity.date;
+                //console.log(date);
+                //in bracket we are passing actual date to match with other object having same date
+                //bracket is used here object property accessor like we do for dot notation accessor
+                activities[date]=activities[date] ? [...activities[date], activity] : [activity]
+                // if(!activities[date]){ //above line is similar to this block of code
+                //     activities[date] = [];
+                // } activities[date].push(activity);
+               
+                return activities;
+               
+            },  {} as {[key: string]: Activity[]})
+        )
+    }
+    
+
     loadActivities = async() =>{
     this.loadingInitial = true;
     try{
@@ -57,11 +76,13 @@ export default class ActivityStore{
             try{
                 activity = await agent.Activities.details(id);  //if we do not have this object in memory we get it from API here
                 this.setActivity(activity);
-                this.selectedActivity = activity;
+                runInAction(() =>{
+                    this.selectedActivity = activity;
+                })
                 this.setLoadingInitital(false);
                 return activity;
             }catch(error){
-                console.log('error');
+                console.log(error);
                 this.setLoadingInitital(false);
             }
         }

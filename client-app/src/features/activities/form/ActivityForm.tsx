@@ -40,7 +40,7 @@ export default observer(function ActivityForm(){
             } 
             createActivity(newActivity).then(()=> navigate(`/activities/${newActivity.id}`));
         }else{
-            updateActivity(activity).then(()=> navigate(`/activities/${activity.id}`))
+            updateActivity(activity).then(()=> navigate(`/activities/${activity.id}`));
         }
     }
 
@@ -51,9 +51,8 @@ export default observer(function ActivityForm(){
         setActivity({...activity, [name]: value}) // then we grab above input value to set here, 3 dots helps to spread the initial existing property of the object, 
                                                   //property with the key of [name] should be set to whatever the value is inside the input element
     }
-
+    
     if(loadingInitial) return <LoadingComponent content='Loading activity...'/>
-
    //using value and name in input field react track as a read only property so we created a function for the onChange event and passed to each input field
     return(
         //clearing helps clear floats like ui button align outside the element

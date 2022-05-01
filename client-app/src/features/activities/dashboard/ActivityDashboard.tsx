@@ -4,6 +4,7 @@ import { useStore } from "../../../app/stores/store";
 import { useEffect } from "react";
 import ActivityList from "./ActivityList";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
+import ActivityFilters from "./ActivityFilters";
 
 // interface Props{
 //     activities: Activity[];
@@ -31,11 +32,11 @@ import LoadingComponent from "../../../app/layout/LoadingComponent";
                 <ActivityList />
             </Grid.Column>
             <Grid.Column width='6'>
+                <ActivityFilters/>
                 {/* {selectedActivity && !editMode &&
                 <ActivityDetails />}
                 {editMode && 
                 <ActivityForm />} */}
-                <h2>Activity filters</h2>
             </Grid.Column>
         </Grid>
     )
